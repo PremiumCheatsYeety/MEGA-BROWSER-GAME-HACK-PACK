@@ -1,0 +1,62 @@
+// ==UserScript==
+// @name         AutoGG
+// @version      1.0
+// @description  Automatically says "gg" after a game has ended
+// @author       Aiden
+// @match        http://vertix.io/
+// ==/UserScript==
+
+const config = () => {
+  localStorage.gg = prompt('Enter your custom GG message (default: off)') || '';
+  message = localStorage.gg;
+};
+
+if (!localStorage.gg) return config();
+
+let message = localStorage.gg;
+
+const sendGG = (msg = message) => {
+  if (!msg && !message) return;
+  document.querySelector('#chatInput').value = message;
+  document.querySelector('#chatInput').focus();
+
+  const input = document.getElementById('chatInput');
+  const event = document.createEvent('Event');
+
+  event.initEvent('keypress');
+  event.which = event.keyCode = 13;
+  input.dispatchEvent(event);
+
+  console.log('[AutoGG] Sent message');
+};
+
+document.querySelector('#socialContainer').innerHTML = `
+  <style>
+    #autogg {
+      background: #3F51B5;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      width: 50%;
+      text-transform: uppercase;
+      border-radius: 5px;
+      transition: background-color 0.2s ease, transform 0.2s ease, -webkit-transform 0.2s ease !important;
+    }
+    #autogg:hover {
+      background: #36459B;
+      transform: translate(0px, -3px) !important;
+    }
+  </style>
+  <center>
+    <button id="autogg">AUTOGG</button>
+  </center>
+`;
+
+document.querySelector('#autogg').onclick = () => config();
+
+setInterval(() => {
+  if (gameOver) {
+    sendGG();
+    message = '';
+  } else message = 'gg';
+}, 300);
